@@ -1,0 +1,34 @@
+σ10398_txt_earn(frequency) 
+	select count(*) from Frequency where docid = '10398_txt_earn';
+
+πterm(σdocid=10398_txt_earn and count=1(frequency)) 
+	select count(term) from Frequency where docid = '10398_txt_earn' and count =1;
+
+πterm(σdocid=10398_txt_earn and count=1(frequency)) U πterm(σdocid=925_txt_trade and count=1(frequency)) 
+	select count(*) FROM (select term from Frequency where docid = '10398_txt_earn' and count = 1 UNION select term from Frequency where docid = '925_txt_trade' and count = 1) x;
+
+select docid from Frequency where term = 'parliament';
+
+select count(docid) FROM (select docid, sum(count) t from Frequency group by docid) x where x.t > 300;
+
+select docid FROM Frequency WHERE term = 'transactions' INTERSECT select docid FROM Frequency WHERE term = 'world';
+
+
+--> Matrix multiplication (A*B)
+SELECT a.row_num, b.col_num, SUM(a.value*b.value)
+FROM a, b
+WHERE a.col_num = b.row_num
+GROUP BY a.row_num, b.col_num;
+
+--> A*B_transpose
+SELECT a.row_num, b.col_num, SUM(a.value*b.value)
+FROM a, (select b.col_num as row_num, b.row_num as col_num , b.value  from b order by row_num) b
+WHERE a.col_num = b.row_num
+GROUP BY a.row_num, b.col_num;
+
+
+--> docid:row_num; term:col_num; count:value
+SELECT a.docid, b.term, SUM(a.count*b.count)
+FROM a, (select b.term as docid, b.docid as term , b.count  from b order by docid) b
+WHERE a.term = b.docid
+GROUP BY a.docid, b.term;
